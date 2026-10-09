@@ -1,0 +1,621 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Administrator Sign In | SipVerse</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    :root {
+      --login-bg: #211513;
+      --login-panel: #32201b;
+      --login-border: rgba(236, 201, 164, .16);
+      --login-text: #f5eadb;
+      --login-muted: #c7a997;
+      --login-blue: #d99854;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body.auth-page {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--login-text);
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(178, 76, 91, .18), transparent 38%),
+        radial-gradient(ellipse at 90% 85%, rgba(217, 152, 84, .12), transparent 35%),
+        var(--login-bg);
+      font-family: var(--font-main);
+    }
+
+    .admin-login-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px clamp(18px, 5vw, 65px);
+      border-bottom: 1px solid var(--login-border);
+      background: rgba(33, 21, 19, .86);
+      backdrop-filter: blur(16px);
+    }
+
+    .admin-login-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--login-text);
+      font-size: 1.45rem;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .admin-login-brand .mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #b24c5b, #d99854);
+      color: white;
+      box-shadow: 0 8px 25px rgba(154, 75, 50, .3);
+    }
+
+    .admin-login-brand span {
+      color: var(--login-blue);
+    }
+
+    .admin-login-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 15px;
+      border: 1px solid var(--login-border);
+      border-radius: 11px;
+      color: #e2c4a6;
+      font-size: .88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: .2s ease;
+    }
+
+    .admin-login-back:hover {
+      border-color: rgba(217, 152, 84, .5);
+      background: rgba(217, 152, 84, .1);
+      color: white;
+    }
+
+    .admin-login-main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 79px);
+      padding: 45px 18px;
+    }
+
+    .admin-login-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      width: min(940px, 100%);
+      overflow: hidden;
+      border: 1px solid var(--login-border);
+      border-radius: 26px;
+      background: rgba(50, 32, 27, .92);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .35);
+      backdrop-filter: blur(20px);
+    }
+
+    .admin-login-intro {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 570px;
+      overflow: hidden;
+      padding: clamp(28px, 4vw, 48px);
+      background:
+        radial-gradient(circle at 85% 20%, rgba(217, 152, 84, .24), transparent 35%),
+        linear-gradient(rgba(33, 21, 19, .76), rgba(33, 21, 19, .9)),
+        url('/images/coffee-splash.png') center / cover;
+    }
+
+    .admin-login-intro::after {
+      position: absolute;
+      inset: -18px;
+      background: inherit;
+      filter: blur(9px) saturate(.9);
+      content: "";
+      transform: scale(1.04);
+    }
+
+    .admin-login-intro::before {
+      position: absolute;
+      right: -100px;
+      bottom: -110px;
+      width: 310px;
+      height: 310px;
+      border: 1px solid rgba(217, 152, 84, .16);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 35px rgba(217, 152, 84, .04),
+        0 0 0 75px rgba(217, 152, 84, .025);
+      content: "";
+    }
+
+    .admin-intro-content,
+    .admin-intro-footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .admin-intro-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 25px;
+      color: #e4a66c;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .admin-intro-label::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #c98252;
+      box-shadow: 0 0 12px rgba(201, 130, 82, .7);
+      content: "";
+    }
+
+    .admin-login-intro h1 {
+      max-width: 380px;
+      margin: 0;
+      color: #f5eadb;
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+    }
+
+    .admin-login-intro h1 span {
+      color: #e4a66c;
+    }
+
+    .admin-intro-description {
+      max-width: 350px;
+      margin: 20px 0 0;
+      color: #c7a997;
+      font-size: .96rem;
+      line-height: 1.8;
+    }
+
+    .admin-feature-list {
+      display: grid;
+      gap: 17px;
+      margin-top: 38px;
+    }
+
+    .admin-feature {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #ead5bf;
+      font-size: .88rem;
+    }
+
+    .admin-feature-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(104, 183, 255, .2);
+      border-radius: 12px;
+      background: rgba(217, 152, 84, .12);
+      color: #e4a66c;
+      font-size: 1.1rem;
+    }
+
+    .admin-intro-footer {
+      margin-top: 45px;
+      color: #a9856e;
+      font-size: .76rem;
+    }
+
+    .admin-login-form-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(28px, 4vw, 48px);
+    }
+
+    .admin-form-heading {
+      margin-bottom: 28px;
+    }
+
+    .admin-form-eyebrow {
+      margin: 0 0 10px;
+      color: #e4a66c;
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .admin-form-heading h2 {
+      margin: 0;
+      color: var(--login-text);
+      font-size: clamp(1.7rem, 3vw, 2.15rem);
+      letter-spacing: -.04em;
+    }
+
+    .admin-form-heading p {
+      margin: 11px 0 0;
+      color: var(--login-muted);
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+
+    .admin-login-error {
+      margin-bottom: 18px;
+      padding: 13px 15px;
+      border: 1px solid rgba(255, 105, 105, .28);
+      border-radius: 11px;
+      background: rgba(255, 91, 91, .08);
+      color: #ffaaaa;
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+
+    .admin-login-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .admin-login-form label {
+      margin-top: 8px;
+      color: #cbd9ea;
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .admin-login-form input {
+      width: 100%;
+      min-height: 49px;
+      padding: 12px 14px;
+      border: 1px solid #79513a;
+      border-radius: 11px;
+      outline: none;
+      background: #38231d;
+      color: #f5eadb;
+      font: inherit;
+      font-size: .9rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .admin-login-form input::placeholder {
+      color: #a9856e;
+    }
+
+    .admin-login-form input:focus {
+      border-color: var(--login-blue);
+      box-shadow: 0 0 0 3px rgba(217, 152, 84, .16);
+    }
+
+    .admin-login-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 50px;
+      margin-top: 17px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #b24c5b, #d99854);
+      color: white;
+      font: inherit;
+      font-size: .92rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 9px 25px rgba(154, 75, 50, .24);
+      transition: transform .2s ease, filter .2s ease;
+    }
+
+    .admin-login-submit:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .admin-demo-box {
+      margin-top: 27px;
+      padding: 17px;
+      border: 1px solid rgba(104, 183, 255, .2);
+      border-radius: 14px;
+      background: rgba(217, 152, 84, .07);
+    }
+
+    .admin-demo-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+      color: #f0c79f;
+      font-size: .85rem;
+      font-weight: 800;
+    }
+
+    .admin-demo-heading span {
+      display: grid;
+      place-items: center;
+      width: 29px;
+      height: 29px;
+      border-radius: 9px;
+      background: rgba(217, 152, 84, .14);
+      font-size: .9rem;
+    }
+
+    .admin-demo-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 11px;
+    }
+
+    .admin-demo-detail small {
+      color: #a9856e;
+      font-size: .73rem;
+    }
+
+    .admin-demo-detail code {
+      overflow-wrap: anywhere;
+      color: #f0dfca;
+      font-family: var(--font-main);
+      font-size: .83rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    .admin-demo-note {
+      margin: 14px 0 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--login-border);
+      color: #a9856e;
+      font-size: .73rem;
+      line-height: 1.6;
+    }
+
+    .admin-login-bottom {
+      margin-top: 24px;
+      color: #a9856e;
+      font-size: .75rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .admin-login-layout {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 500px;
+      }
+
+      .admin-login-intro {
+        min-height: auto;
+        padding: 30px;
+      }
+
+      .admin-login-intro h1 {
+        max-width: 400px;
+        font-size: 2.4rem;
+      }
+
+      .admin-intro-description {
+        margin-top: 14px;
+      }
+
+      .admin-feature-list {
+        grid-template-columns: 1fr;
+        gap: 11px;
+        margin-top: 25px;
+      }
+
+      .admin-intro-footer {
+        margin-top: 25px;
+      }
+
+      .admin-login-form-side {
+        padding: 30px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .admin-login-header {
+        padding: 13px 15px;
+      }
+
+      .admin-login-brand {
+        gap: 7px;
+        font-size: 1.2rem;
+      }
+
+      .admin-login-brand .mark {
+        width: 35px;
+        height: 35px;
+      }
+
+      .admin-login-back {
+        padding: 8px 10px;
+        font-size: .75rem;
+      }
+
+      .admin-login-main {
+        padding: 25px 12px;
+      }
+
+      .admin-login-intro,
+      .admin-login-form-side {
+        padding: 24px 20px;
+      }
+
+      .admin-login-intro h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="auth-page">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="admin-login-header">
+    <a class="admin-login-brand" href="/login">
+      <b class="mark">S</b>
+      <span style="color: var(--login-text)">Sip<span>Verse</span></span>
+    </a>
+
+    <a class="admin-login-back" href="/login">
+      <span aria-hidden="true">←</span>
+      Customer Sign In
+    </a>
+  </header>
+
+  <!-- ==================== LOGIN CONTENT ==================== -->
+  <main class="admin-login-main">
+
+    <div class="admin-login-layout">
+
+      <!-- Intro panel -->
+      <section class="admin-login-intro">
+        <div class="admin-intro-content">
+
+          <p class="admin-intro-label">Store Management Portal</p>
+
+          <h1>
+            Your store.<br>
+            Your <span>control.</span>
+          </h1>
+
+          <p class="admin-intro-description">
+            Welcome to the SipVerse administration portal.
+            Sign in to manage your drinks, monitor inventory,
+            and keep customer orders organized.
+          </p>
+
+          <div class="admin-feature-list">
+
+            <div class="admin-feature">
+              <span class="admin-feature-icon" aria-hidden="true">☕</span>
+              <span>Manage your drink catalog</span>
+            </div>
+
+            <div class="admin-feature">
+              <span class="admin-feature-icon" aria-hidden="true">▤</span>
+              <span>Monitor products and inventory</span>
+            </div>
+
+            <div class="admin-feature">
+              <span class="admin-feature-icon" aria-hidden="true">↗</span>
+              <span>Review and update customer orders</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="admin-intro-footer">
+          SipVerse · Store Control Center
+        </div>
+      </section>
+
+      <!-- Login form panel -->
+      <section class="admin-login-form-side">
+
+        <div class="admin-form-heading">
+          <p class="admin-form-eyebrow">Administrator Access</p>
+          <h2>Sign in to your account</h2>
+          <p>
+            Enter your administrator credentials to open
+            your SipVerse dashboard.
+          </p>
+        </div>
+
+        <% if (error) { %>
+          <div class="admin-login-error" role="alert">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <form
+          class="admin-login-form"
+          method="POST"
+          action="/admin/login"
+        >
+          <label for="admin-email">Admin email</label>
+          <input
+            id="admin-email"
+            type="email"
+            name="email"
+            value="<%= email %>"
+            placeholder="Enter your admin email"
+            autocomplete="username"
+            required
+          >
+
+          <label for="admin-password">Password</label>
+          <input
+            id="admin-password"
+            type="password"
+            name="password"
+            value="<%= password %>"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          >
+
+          <button class="admin-login-submit" type="submit">
+            Open Dashboard <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <!-- Demo credentials -->
+        <aside class="admin-demo-box">
+          <div class="admin-demo-heading">
+            <span aria-hidden="true">♙</span>
+            Admin Demo Account
+          </div>
+
+          <div class="admin-demo-detail">
+            <small>Email address</small>
+            <code>admin@sipverse.local</code>
+          </div>
+
+          <div class="admin-demo-detail">
+            <small>Password</small>
+            <code>SipVerseAdmin123!</code>
+          </div>
+
+          <p class="admin-demo-note">
+            Demo credentials must match the ADMIN_EMAIL and
+            ADMIN_PASSWORD values configured in your .env file.
+          </p>
+        </aside>
+
+        <div class="admin-login-bottom">
+          Protected administrator access · SipVerse
+        </div>
+
+      </section>
+    </div>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Sign in | SipVerse</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+
+  <body class="auth-page">
+    <!-- Header -->
+    <header class="topbar">
+      <a class="brand" href="/login">
+        <b class="mark">S</b>
+        Sip<span>Verse</span>
+      </a>
+
+      <a href="/admin/login">
+        Administrator sign in ↗
+      </a>
+    </header>
+
+    <!-- Main authentication layout -->
+    <main class="auth-wrap">
+
+      <!-- Left: Welcome section -->
+      <section class="auth-art">
+        <p class="eyebrow">
+          YOUR EVERYDAY DRINK DESTINATION
+        </p>
+
+        <h1>
+          Find your<br>
+          <em>perfect sip.</em>
+        </h1>
+
+        <p>
+          Fresh cravings, cozy coffee, creamy milk tea,
+          and refreshing favorites—all in one place.
+        </p>
+
+        <img
+          class="float-cup"
+          src="/images/coffee-splash.png"
+          alt="Coffee drinks splashing"
+        >
+
+        <small>Every sip has a story.</small>
+      </section>
+
+      <!-- Right: Sign-in form -->
+      <section class="auth-card">
+        <div class="brand-icon">🥤</div>
+
+        <p class="eyebrow">WELCOME BACK</p>
+
+        <h2>Sign in to SipVerse</h2>
+
+        <p class="muted">
+          Enter your customer account to continue.
+        </p>
+
+        <!-- Registration success message -->
+        <% if (registered) { %>
+          <div class="notice success">
+            Account created! You can sign in now.
+          </div>
+        <% } %>
+
+        <!-- Login error message -->
+        <% if (error) { %>
+          <div class="notice">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <!-- Login form -->
+        <form method="POST" action="/login">
+          <label for="email">Email address</label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="<%= email %>"
+            required
+            autocomplete="username"
+          >
+
+          <label for="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value="<%= password %>"
+            required
+            autocomplete="current-password"
+          >
+
+          <button class="btn primary full" type="submit">
+            Sign In <span>→</span>
+          </button>
+        </form>
+
+        <!-- Registration link -->
+        <p class="center muted">
+          New to SipVerse?
+          <a href="/register">Create an account</a>
+        </p>
+
+        <!-- Demo account details -->
+        <aside class="demo">
+          <strong>Presentation customer account</strong>
+
+          <p>Email: customer@sipverse.local</p>
+          <p>Password: Customer123!</p>
+
+          <small>
+            These credentials are prefilled. The account must
+            be registered in your database.
+          </small>
+        </aside>
+      </section>
+
+    </main>
+  </body>
+</html>

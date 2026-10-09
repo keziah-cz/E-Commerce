@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %> | SipVerse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<header class="bg-white border-b">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+        <a href="/" class="text-2xl font-bold text-blue-600">SipVerse</a>
+        <div class="flex flex-wrap items-center gap-5 text-sm font-medium">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/shop" class="nav-link">Shop</a>
+            <a href="/cart" class="nav-link">Cart</a>
+            <% if (user) { %>
+                <span class="text-slate-500">Hi, <%= user.name %></span>
+                <form action="/logout" method="POST"><button class="text-red-600">Logout</button></form>
+            <% } else { %>
+                <a href="/login" class="nav-link">Login</a>
+                <a href="/register" class="nav-link">Register</a>
+            <% } %>
+        </div>
+    </nav>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-12">
+    <a href="/shop" class="text-sm text-blue-600 hover:underline">← Back to Shop</a>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-6 bg-white border rounded-2xl p-6 md:p-10">
+        <div>
+            <% if (product.image) { %>
+                <img src="<%= product.image %>" alt="<%= product.name %>" class="w-full rounded-xl object-cover max-h-[500px]">
+            <% } else { %>
+                <div class="w-full min-h-80 bg-blue-50 rounded-xl flex items-center justify-center text-8xl">🥤</div>
+            <% } %>
+        </div>
+
+        <div class="flex flex-col justify-center">
+            <p class="text-blue-600 font-semibold text-sm uppercase tracking-wide"><%= product.category_name || 'Drink' %></p>
+            <h1 class="text-4xl font-bold mt-3"><%= product.name %></h1>
+            <p class="text-3xl font-bold mt-5">₱<%= Number(product.price).toFixed(2) %></p>
+
+            <div class="mt-6 text-slate-600 leading-7">
+                <%= product.description || 'A refreshing drink from SipVerse. Add it to your cart and enjoy!' %>
+            </div>
+
+            <p class="mt-5 text-sm <%= Number(product.stock) > 0 ? 'text-green-700' : 'text-red-600' %>">
+                <%= Number(product.stock) > 0 ? product.stock + ' available in stock' : 'Currently out of stock' %>
+            </p>
+
+            <% if (Number(product.stock) > 0) { %>
+                <form action="/cart/add/<%= product.id %>" method="POST" class="mt-6">
+                    <label for="quantity" class="block text-sm font-medium mb-2">Quantity</label>
+                    <input id="quantity" name="quantity" type="number" min="1"
+                           max="<%= Math.min(Number(product.stock), 99) %>" value="1" required
+                           class="form-input max-w-32 mb-4">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
+                        Add to Cart
+                    </button>
+                </form>
+            <% } else { %>
+                <button disabled class="mt-6 w-full bg-slate-300 text-slate-500 py-3 rounded-lg cursor-not-allowed">
+                    Out of Stock
+                </button>
+            <% } %>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SipVerse | Your Everyday Drink Destination</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="/" class="brand">
+        <span class="brand-mark">S</span>
+        Sip<span>Verse</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="active">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/#categories">Categories</a>
+        <a href="/#featured">Featured</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/cart" class="btn btn-soft">🛒 Cart</a>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/shop" class="btn btn-primary">Shop Now</a>
+        <% } else { %>
+          <a href="/login" class="btn btn-primary">Sign In</a>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Welcome to SipVerse</span>
+
+          <h1>
+            Your daily dose of
+            <span>happiness</span>
+            in every sip.
+          </h1>
+
+          <p>
+            Discover your next favorite drink. From rich coffee and creamy
+            milk tea to refreshing fruit tea and juices, your perfect sip
+            is waiting for you.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="/shop" class="btn btn-primary">
+              Explore Drinks <span>→</span>
+            </a>
+
+            <a href="#categories" class="btn btn-outline">
+              Browse Categories
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-art">
+          <img
+            class="hero-drink-image"
+            src="/images/drink-cluster.png"
+            alt="A colorful group of iced drinks"
+          >
+
+          <div class="hero-bubble">
+            Find your perfect sip ✨
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Find your favorite</span>
+            <h2>Explore Categories</h2>
+            <p>Something refreshing for every mood.</p>
+          </div>
+
+          <a href="/shop" class="text-link">View all drinks →</a>
+        </div>
+
+        <div class="category-grid">
+          <a href="/shop?category=Coffee" class="category-card">
+            <div class="category-icon">☕</div>
+            <h3>Coffee</h3>
+          </a>
+
+          <a href="/shop?category=Milk%20Tea" class="category-card">
+            <div class="category-icon">🧋</div>
+            <h3>Milk Tea</h3>
+          </a>
+
+          <a href="/shop?category=Fruit%20Tea" class="category-card">
+            <div class="category-icon">🍵</div>
+            <h3>Fruit Tea</h3>
+          </a>
+
+          <a href="/shop?category=Juices" class="category-card">
+            <div class="category-icon">🧃</div>
+            <h3>Juices</h3>
+          </a>
+
+          <a href="/shop?category=Soft%20Drinks" class="category-card">
+            <div class="category-icon">🥤</div>
+            <h3>Soft Drinks</h3>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="section" id="featured">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Made for your cravings</span>
+            <h2>Featured Drinks</h2>
+            <p>Take a look at some of the drinks waiting for you.</p>
+          </div>
+
+          <a href="/shop" class="text-link">Shop all drinks →</a>
+        </div>
+
+        <% if (typeof products !== 'undefined' && products.length > 0) { %>
+          <div class="product-grid">
+            <% products.slice(0, 8).forEach(function(product) { %>
+              <article class="product-card">
+                <a
+                  href="/product/<%= product.id %>"
+                  class="product-image"
+                  aria-label="View <%= product.name %>"
+                >
+                  <% if (product.image) { %>
+                    <img
+                      src="<%= product.image.startsWith('/') ? product.image : '/images/' + product.image %>"
+                      alt="<%= product.name %>"
+                      loading="lazy"
+                    >
+                  <% } else { %>
+                    <div class="product-image-placeholder">🥤</div>
+                  <% } %>
+                </a>
+
+                <div class="product-info">
+                  <span class="product-category">
+                    <%= product.category || 'Drink' %>
+                  </span>
+
+                  <h3>
+                    <a href="/product/<%= product.id %>">
+                      <%= product.name %>
+                    </a>
+                  </h3>
+
+                  <p class="product-description">
+                    <%= product.description || 'A delicious drink made for your next favorite sip.' %>
+                  </p>
+
+                  <div class="product-bottom">
+                    <span class="product-price">
+                      ₱<%= Number(product.price || 0).toFixed(2) %>
+                    </span>
+
+                    <a
+                      href="/product/<%= product.id %>"
+                      class="btn btn-primary small-btn"
+                    >
+                      View Drink
+                    </a>
+                  </div>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <h3>No featured drinks yet</h3>
+            <p>Check back soon for drinks to discover.</p>
+            <br>
+            <a href="/shop" class="btn btn-primary">Visit the Shop</a>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="section">
+      <div class="container">
+        <div class="promo-banner">
+          <div>
+            <span class="eyebrow">Your next favorite is waiting</span>
+            <h2>Ready to find your perfect sip?</h2>
+            <p>
+              Explore our drink collection and discover something you will love.
+            </p>
+          </div>
+
+          <a href="/shop" class="btn btn-primary">
+            Start Exploring →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <a href="/" class="brand">
+        <span class="brand-mark">S</span>
+        Sip<span>Verse</span>
+      </a>
+
+      <p>© <%= new Date().getFullYear() %> SipVerse. Every sip has a story.</p>
+
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/cart">Cart</a>
+        <a href="/login">Sign In</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

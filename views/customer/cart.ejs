@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | SipVerse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<header class="bg-white border-b">
+    <nav class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+        <a href="/" class="text-2xl font-bold text-blue-600">SipVerse</a>
+        <div class="flex flex-wrap items-center gap-5 text-sm font-medium">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/shop" class="nav-link">Shop</a>
+            <a href="/cart" class="nav-link">Cart</a>
+            <% if (user) { %>
+                <span class="text-slate-500">Hi, <%= user.name %></span>
+                <form action="/logout" method="POST"><button class="text-red-600">Logout</button></form>
+            <% } else { %>
+                <a href="/login" class="nav-link">Login</a>
+                <a href="/register" class="nav-link">Register</a>
+            <% } %>
+        </div>
+    </nav>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-12">
+    <div class="mb-8">
+        <p class="text-blue-600 font-semibold text-sm mb-2">YOUR ORDER</p>
+        <h1 class="text-4xl font-bold">Shopping Cart</h1>
+    </div>
+
+    <% if (items.length === 0) { %>
+        <div class="bg-white border rounded-2xl p-10 text-center">
+            <div class="text-5xl mb-4">🛒</div>
+            <h2 class="text-2xl font-bold">Your cart is empty</h2>
+            <p class="text-slate-500 mt-2">Looks like you haven't added any drinks yet.</p>
+            <a href="/shop" class="inline-block mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Browse Drinks
+            </a>
+        </div>
+    <% } else { %>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <section class="lg:col-span-2 space-y-4">
+                <% items.forEach(item => { %>
+                    <article class="bg-white border rounded-xl p-4 flex flex-col sm:flex-row gap-5">
+                        <% if (item.image) { %>
+                            <img src="<%= item.image %>" alt="<%= item.name %>" class="w-full sm:w-32 h-32 object-cover rounded-lg">
+                        <% } else { %>
+                            <div class="w-full sm:w-32 h-32 bg-blue-50 rounded-lg flex items-center justify-center text-4xl">🥤</div>
+                        <% } %>
+
+                        <div class="flex-1">
+                            <a href="/product/<%= item.id %>" class="font-bold text-lg hover:text-blue-600"><%= item.name %></a>
+                            <p class="text-slate-500 mt-1">₱<%= Number(item.price).toFixed(2) %> each</p>
+                            <p class="font-semibold mt-2">Subtotal: ₱<%= item.lineTotal.toFixed(2) %></p>
+
+                            <div class="flex flex-wrap items-center gap-4 mt-4">
+                                <form action="/cart/update/<%= item.id %>" method="POST" class="flex items-center gap-2">
+                                    <label for="quantity-<%= item.id %>" class="text-sm">Qty:</label>
+                                    <input id="quantity-<%= item.id %>" name="quantity" type="number"
+                                           min="0" max="<%= item.stock %>" value="<%= item.quantity %>"
+                                           class="form-input w-24">
+                                    <button class="text-sm bg-slate-100 px-3 py-2 rounded-lg hover:bg-slate-200">Update</button>
+                                </form>
+
+                                <form action="/cart/remove/<%= item.id %>" method="POST">
+                                    <button class="text-sm text-red-600 hover:underline">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                <% }) %>
+            </section>
+
+            <aside class="bg-white border rounded-xl p-6 h-fit">
+                <h2 class="text-xl font-bold mb-5">Order Summary</h2>
+                <div class="flex justify-between text-slate-600 mb-3">
+                    <span>Items</span>
+                    <span><%= items.reduce((sum, item) => sum + item.quantity, 0) %></span>
+                </div>
+                <div class="flex justify-between text-slate-600 mb-4">
+                    <span>Subtotal</span>
+                    <span>₱<%= subtotal.toFixed(2) %></span>
+                </div>
+                <div class="border-t pt-4 flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span>₱<%= subtotal.toFixed(2) %></span>
+                </div>
+
+                <button disabled class="w-full mt-6 bg-slate-300 text-slate-500 py-3 rounded-lg cursor-not-allowed">
+                    Checkout — Coming Soon
+                </button>
+
+                <a href="/shop" class="block text-center mt-4 text-blue-600 font-semibold hover:underline">
+                    Continue Shopping
+                </a>
+            </aside>
+        </div>
+    <% } %>
+</main>
+
+</body>
+</html>

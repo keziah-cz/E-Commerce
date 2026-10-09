@@ -1,0 +1,945 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Shop | SipVerse</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+
+  <body data-success-message="<%= success || '' %>">
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="topbar sticky">
+      <a class="brand" href="/shop">
+        <b class="mark">S</b>
+        Sip<span>Verse</span>
+      </a>
+
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#categories">Categories</a>
+        <a href="#drinks">All Drinks</a>
+      </nav>
+
+      <div class="top-actions">
+        <span class="hello">Hi, <%= user.name %></span>
+
+        <button class="btn soft" id="openCart" type="button">
+          🛒 Cart
+          <b id="cartBadge"><%= cartCount %></b>
+        </button>
+
+        <button class="btn soft" id="openOrders" type="button">
+          📦 Orders
+        </button>
+
+        <form action="/logout" method="POST">
+          <button class="link-button" type="submit">
+            Sign out
+          </button>
+        </form>
+      </div>
+    </header>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main id="home">
+
+      <!-- Hero section -->
+      <section class="hero">
+        <div>
+          <p class="eyebrow">SIP, SMILE, REPEAT</p>
+
+          <h1>
+            Your daily dose of<br>
+            <em>happiness</em> in every sip.
+          </h1>
+
+          <p>
+            From bold coffee to creamy milk tea and fruity
+            refreshers, find a drink that matches your mood.
+          </p>
+
+          <a class="btn primary" href="#drinks">
+            Explore Drinks →
+          </a>
+        </div>
+
+        <img
+          class="hero-drink-image hero-drink-image--shop"
+          src="/images/drink-cluster.png"
+          alt="A colorful group of iced drinks"
+        >
+      </section>
+
+      <!-- ==================== DRINK MENU ==================== -->
+      <section class="section" id="drinks">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">MADE FOR YOUR CRAVINGS</p>
+            <h2>Our Drinks</h2>
+
+            <p class="muted">
+              Pick a category to filter the menu, then add any drink to your cart.
+            </p>
+          </div>
+
+          <!-- Search and sorting controls -->
+          <div class="filters">
+            <input
+              id="search"
+              type="search"
+              placeholder="Search drinks..."
+              aria-label="Search drinks"
+            >
+
+            <select id="sort" aria-label="Sort drinks">
+              <option value="default">Sort: Featured</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+              <option value="name">Name: A–Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ==================== CATEGORY FILTERS ==================== -->
+        <div class="category-bar" id="categories">
+          <div class="category-bar-head">
+            <p class="eyebrow">PICK YOUR MOOD</p>
+
+            <h3>Browse by category</h3>
+
+            <p class="category-count">
+              <b id="categoryCount"><%= products.length %></b>
+              <span id="categoryCountLabel">drinks available</span>
+            </p>
+          </div>
+
+          <div class="category-row">
+            <button class="category active" data-category="all" type="button">
+              ✨
+              <span>All drinks</span>
+              <b><%= products.length %></b>
+            </button>
+
+            <% categories.forEach(category => { %>
+              <button
+                class="category"
+                data-category="<%= category.id %>"
+                type="button"
+              >
+                🥤
+                <span><%= category.name %></span>
+                <b>
+                  <%= products.filter(product => Number(product.category_id) === Number(category.id)).length %>
+                </b>
+              </button>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Product cards -->
+        <div class="product-grid" id="productGrid">
+          <% products.forEach(product => { %>
+            <article
+              class="product-card"
+              data-id="<%= product.id %>"
+              data-name="<%= product.name.toLowerCase() %>"
+              data-category="<%= product.category_id || '' %>"
+              data-price="<%= Number(product.price) %>"
+              data-description="<%= product.description || '' %>"
+              data-image="<%= product.image || '' %>"
+              data-stock="<%= product.stock %>"
+            >
+              <!-- Product image -->
+              <button
+                class="image-button open-details"
+                type="button"
+                aria-label="View details for <%= product.name %>"
+              >
+                <% if (product.image) { %>
+                  <img
+                    src="<%= product.image.startsWith('/') ? product.image : '/images/' + product.image %>"
+                    alt="<%= product.name %>"
+                  >
+                <% } else { %>
+                  <span class="product-emoji">🥤</span>
+                <% } %>
+              </button>
+
+              <!-- Product information -->
+              <div class="product-info">
+                <small>
+                  <%= product.category_name || 'SipVerse favorite' %>
+                </small>
+
+                <h3><%= product.name %></h3>
+
+                <p class="description">
+                  <%= product.description || 'A delicious drink made for your next favorite sip.' %>
+                </p>
+
+                <div class="product-bottom">
+                  <strong>
+                    ₱<%= Number(product.price).toFixed(2) %>
+                  </strong>
+
+                  <button
+                    class="btn primary add-btn"
+                    type="button"
+                    <%= product.stock <= 0 ? 'disabled' : '' %>
+                  >
+                    ＋ Add
+                  </button>
+                </div>
+
+                <small class="stock">
+                  <%= product.stock > 0
+                    ? product.stock + ' in stock'
+                    : 'Out of stock' %>
+                </small>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+
+        <!-- Empty search results -->
+        <p id="empty" class="empty" hidden>
+          No drinks match your search.
+        </p>
+      </section>
+
+      <!-- ==================== PROMOTION ==================== -->
+      <section class="promo">
+        <div>
+          <p class="eyebrow">A LITTLE JOY IN EVERY CUP</p>
+
+          <h2>Ready for your next favorite?</h2>
+
+          <p>
+            Browse the menu and make your day a little more refreshing.
+          </p>
+        </div>
+
+        <a class="btn primary" href="#drinks">
+          Find a drink →
+        </a>
+      </section>
+
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+      © <%= new Date().getFullYear() %> SipVerse · Every sip has a story.
+    </footer>
+
+    <!-- ==================== CART OVERLAY ==================== -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- ==================== CART DRAWER ==================== -->
+    <aside class="drawer" id="cartDrawer">
+      <div class="drawer-head">
+        <div>
+          <p class="eyebrow">YOUR ORDER</p>
+          <h2>Your Cart</h2>
+        </div>
+
+        <button class="close" id="closeCart" type="button" aria-label="Close cart">
+          ✕
+        </button>
+      </div>
+
+      <!-- Cart items -->
+      <div id="cartContents">
+        <% if (!cartItems.length) { %>
+          <p class="empty">
+            Your cart is waiting for something delicious.
+          </p>
+        <% } else { %>
+          <% cartItems.forEach(item => { %>
+            <div class="cart-item">
+              <% if (item.image) { %>
+                <img
+                  class="cart-item-image"
+                  src="<%= item.image.startsWith('/') ? item.image : '/images/' + item.image %>"
+                  alt="<%= item.name %>"
+                >
+              <% } else { %>
+                <div class="cart-item-placeholder" aria-hidden="true">🥤</div>
+              <% } %>
+
+              <div>
+                <b><%= item.name %></b>
+
+                <p>
+                  ₱<%= Number(item.price).toFixed(2) %> each
+                </p>
+
+                <div class="cart-quantity">
+                  <button
+                    class="step"
+                    type="button"
+                    data-action="decrease"
+                    data-id="<%= item.id %>"
+                    aria-label="Decrease quantity for <%= item.name %>"
+                  >
+                    −
+                  </button>
+
+                  <input
+                    type="number"
+                    min="0"
+                    max="<%= item.stock %>"
+                    value="<%= item.quantity %>"
+                    readonly
+                    aria-label="Quantity for <%= item.name %>"
+                  >
+
+                  <button
+                    class="step"
+                    type="button"
+                    data-action="increase"
+                    data-id="<%= item.id %>"
+                    aria-label="Increase quantity for <%= item.name %>"
+                  >
+                    ＋
+                  </button>
+                </div>
+              </div>
+
+              <strong>
+                ₱<%= item.lineTotal.toFixed(2) %>
+              </strong>
+
+              <button
+                class="remove"
+                type="button"
+                data-action="remove"
+                data-id="<%= item.id %>"
+              >
+                Remove
+              </button>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+
+      <!-- Cart subtotal and checkout -->
+      <div class="cart-summary">
+        <p>
+          <span>Subtotal</span>
+          <b id="cartSubtotal">₱<%= cartTotal.toFixed(2) %></b>
+        </p>
+
+        <button
+          class="btn primary full"
+          type="button"
+          id="checkoutButton"
+          <%= cartItems.length ? '' : 'disabled' %>
+        >
+          Place Order →
+        </button>
+
+        <small>
+          Order total excludes any delivery fee.
+        </small>
+      </div>
+    </aside>
+
+    <!-- ==================== CHECKOUT CONFIRMATION MODAL ==================== -->
+    <div class="modal-wrap" id="checkoutModal">
+      <div class="modal checkout-modal">
+        <button
+          class="close modal-close"
+          id="closeCheckout"
+          type="button"
+          aria-label="Close checkout confirmation"
+        >
+          ✕
+        </button>
+
+        <p class="eyebrow">ALMOST THERE</p>
+        <h2>Confirm your order</h2>
+        <p class="muted checkout-intro">
+          Check your contact and delivery details before placing this order.
+        </p>
+
+        <form action="/checkout" method="POST" id="checkoutForm" class="checkout-form">
+          <div class="checkout-fields grid gap-4">
+            <label>
+              Full name
+              <input name="name" type="text" value="<%= user.name %>" required maxlength="150">
+            </label>
+
+            <label>
+              Phone number
+              <input name="phone" type="tel" placeholder="09XX XXX XXXX" required maxlength="40">
+            </label>
+
+            <label class="checkout-field-full">
+              Email
+              <input name="email" type="email" value="<%= user.email %>" readonly required>
+            </label>
+
+            <label>
+              City / Municipality
+              <input name="city" type="text" required maxlength="100">
+            </label>
+
+            <label>
+              Barangay
+              <input name="barangay" type="text" required maxlength="100">
+            </label>
+
+            <label class="checkout-field-full">
+              Street / building
+              <input name="street" type="text" placeholder="House number, street, subdivision" required maxlength="255">
+            </label>
+
+            <label class="checkout-field-full">
+              Other location details
+              <textarea name="addressDetails" rows="2" placeholder="Distinct house color, landmark, floor, or other directions" required maxlength="255"></textarea>
+            </label>
+          </div>
+
+          <div class="checkout-confirm-row flex items-center justify-between gap-4">
+            <span>Order total <strong id="checkoutTotal">₱<%= cartTotal.toFixed(2) %></strong></span>
+            <button class="btn primary" type="submit">Confirm order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== PRODUCT DETAILS MODAL ==================== -->
+    <div class="modal-wrap" id="detailsModal">
+      <div class="modal">
+        <button
+          class="close modal-close"
+          id="closeModal"
+          type="button"
+          aria-label="Close product details"
+        >
+          ✕
+        </button>
+
+        <div id="modalContent"></div>
+      </div>
+    </div>
+
+    <!-- ==================== ORDER STATUS MODAL ==================== -->
+    <aside class="drawer order-drawer" id="ordersModal">
+      <div class="drawer-head">
+        <div>
+          <p class="eyebrow">ORDER TRACKING</p>
+          <h2>Your Orders</h2>
+        </div>
+
+        <button class="close modal-close" id="closeOrders" type="button" aria-label="Close orders">
+          ✕
+        </button>
+      </div>
+
+      <div id="ordersContent">
+        <p class="empty">Loading your orders...</p>
+      </div>
+    </aside>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+      // Product elements and filter controls
+      const cards = [...document.querySelectorAll('.product-card')];
+
+      let chosen = 'all';
+
+      const search = document.getElementById('search');
+      const sort = document.getElementById('sort');
+      const productGrid = document.getElementById('productGrid');
+      const emptyMessage = document.getElementById('empty');
+
+      // Filter and sort the product list
+      function filterProducts() {
+        const searchTerm = search.value.toLowerCase();
+
+        const filteredProducts = cards.filter(card => {
+          const matchesCategory =
+            chosen === 'all' || card.dataset.category === chosen;
+
+          const matchesSearch =
+            card.dataset.name.includes(searchTerm);
+
+          return matchesCategory && matchesSearch;
+        });
+
+        if (sort.value === 'low') {
+          filteredProducts.sort(
+            (a, b) => Number(a.dataset.price) - Number(b.dataset.price)
+          );
+        }
+
+        if (sort.value === 'high') {
+          filteredProducts.sort(
+            (a, b) => Number(b.dataset.price) - Number(a.dataset.price)
+          );
+        }
+
+        if (sort.value === 'name') {
+          filteredProducts.sort(
+            (a, b) => a.dataset.name.localeCompare(b.dataset.name)
+          );
+        }
+
+        // Hide products that do not match the filters
+        cards.forEach(card => {
+          card.hidden = !filteredProducts.includes(card);
+        });
+
+        // Reorder the visible product cards
+        filteredProducts.forEach(card => {
+          productGrid.appendChild(card);
+        });
+
+        // Keep the category counter honest about what is on screen
+        const categoryCount = document.getElementById('categoryCount');
+
+        if (categoryCount) {
+          categoryCount.textContent = filteredProducts.length;
+        }
+
+        // Show a message when no products match
+        emptyMessage.hidden = filteredProducts.length > 0;
+      }
+
+      // Category button events
+      document.querySelectorAll('.category').forEach(button => {
+        button.addEventListener('click', () => {
+          document
+            .querySelector('.category.active')
+            ?.classList.remove('active');
+
+          button.classList.add('active');
+
+          chosen = button.dataset.category;
+
+          filterProducts();
+        });
+      });
+
+      search.addEventListener('input', filterProducts);
+      sort.addEventListener('change', filterProducts);
+
+      // ==================== CART DRAWER ====================
+      const overlay = document.getElementById('overlay');
+      const drawer = document.getElementById('cartDrawer');
+      const detailsModal = document.getElementById('detailsModal');
+      const checkoutModal = document.getElementById('checkoutModal');
+      const ordersModal = document.getElementById('ordersModal');
+      const ordersContent = document.getElementById('ordersContent');
+
+      // Live cart state so the drawer always mirrors the server session
+      const cartContents = document.getElementById('cartContents');
+      const cartBadge = document.getElementById('cartBadge');
+      const cartSubtotal = document.getElementById('cartSubtotal');
+      const checkoutButton = document.getElementById('checkoutButton');
+
+      // Cart data handed over from the server (kept safe for <script> tags)
+      let cartItems = <%- JSON.stringify(cartItems).replace(/</g, '\\u003c') %>;
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // Rebuild the cart drawer with the latest cart contents
+      function renderCart() {
+        const subtotal = cartItems.reduce(
+          (sum, item) => sum + item.lineTotal,
+          0
+        );
+
+        const count = cartItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+
+        cartBadge.textContent = count;
+
+        cartSubtotal.textContent = `₱${subtotal.toFixed(2)}`;
+        document.getElementById('checkoutTotal').textContent = `₱${subtotal.toFixed(2)}`;
+
+        checkoutButton.disabled = cartItems.length === 0;
+
+        if (cartItems.length === 0) {
+          cartContents.innerHTML = `
+            <p class="empty">
+              Your cart is waiting for something delicious.
+            </p>
+          `;
+
+          return;
+        }
+
+        cartContents.innerHTML = cartItems
+          .map(
+            item => `
+              <div class="cart-item">
+                ${item.image
+                  ? `<img class="cart-item-image" src="${item.image.startsWith('/') ? item.image : `/images/${item.image}`}" alt="${escapeHtml(item.name)}">`
+                  : '<div class="cart-item-placeholder" aria-hidden="true">🥤</div>'}
+
+                <div>
+                  <b>${escapeHtml(item.name)}</b>
+
+                  <p>₱${item.price.toFixed(2)} each</p>
+
+                  <div class="cart-quantity">
+                    <button
+                      class="step"
+                      type="button"
+                      data-action="decrease"
+                      data-id="${item.id}"
+                      aria-label="Decrease quantity for ${escapeHtml(item.name)}"
+                    >−</button>
+
+                    <input
+                      type="number"
+                      min="0"
+                      max="${item.stock}"
+                      value="${item.quantity}"
+                      readonly
+                      aria-label="Quantity for ${escapeHtml(item.name)}"
+                    >
+
+                    <button
+                      class="step"
+                      type="button"
+                      data-action="increase"
+                      data-id="${item.id}"
+                      aria-label="Increase quantity for ${escapeHtml(item.name)}"
+                    >＋</button>
+                  </div>
+                </div>
+
+                <strong>₱${item.lineTotal.toFixed(2)}</strong>
+
+                <button
+                  class="remove"
+                  type="button"
+                  data-action="remove"
+                  data-id="${item.id}"
+                >Remove</button>
+              </div>
+            `
+          )
+          .join('');
+      }
+
+      // Keep the drawer, badge, and subtotal in sync with the response
+      function applyCartResult(result) {
+        if (Array.isArray(result.items)) {
+          cartItems = result.items;
+          renderCart();
+        } else if (typeof result.count === 'number') {
+          cartBadge.textContent = result.count;
+        }
+      }
+
+      // Quantity steps and Remove buttons inside the cart drawer
+      cartContents.addEventListener('click', async event => {
+        const button = event.target.closest('button[data-action]');
+
+        if (!button) {
+          return;
+        }
+
+        const itemId = Number(button.dataset.id);
+
+        const item = cartItems.find(entry => Number(entry.id) === itemId);
+
+        if (!item) {
+          return;
+        }
+
+        const action = button.dataset.action;
+
+        const url =
+          action === 'remove'
+            ? `/cart/remove/${itemId}`
+            : `/cart/update/${itemId}`;
+
+        const body =
+          action === 'remove'
+            ? {}
+            : {
+                quantity:
+                  action === 'increase' ? item.quantity + 1 : item.quantity - 1
+              };
+
+        button.disabled = true;
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            body: JSON.stringify(body)
+          });
+
+          const result = await response.json();
+
+          if (result.error) {
+            toast(result.error);
+            return;
+          }
+
+          applyCartResult(result);
+
+          if (result.message) {
+            toast(result.message);
+          }
+        } catch (error) {
+          toast('Unable to update your cart. Please try again.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      function openCart() {
+        overlay.classList.add('show');
+        drawer.classList.add('show');
+      }
+
+      function closeCart() {
+        overlay.classList.remove('show');
+        drawer.classList.remove('show');
+      }
+
+      function openCheckout() {
+        if (cartItems.length === 0) {
+          return;
+        }
+
+        checkoutModal.classList.add('show');
+      }
+
+      function closeCheckout() {
+        checkoutModal.classList.remove('show');
+      }
+
+      function renderOrders(orders) {
+        if (!orders.length) {
+          ordersContent.innerHTML = '<p class="empty">You have not placed an order yet.</p>';
+          return;
+        }
+
+        const steps = ['Pending', 'Processing', 'Completed'];
+
+        ordersContent.innerHTML = orders.map(order => {
+          const activeStep = steps.indexOf(order.status);
+          const statusClass = order.status.toLowerCase();
+
+          return `
+            <article class="order-card ${statusClass}">
+              <div class="order-card-head">
+                <div>
+                  <p class="eyebrow">ORDER #${order.id}</p>
+                  <small>${new Date(order.createdAt).toLocaleString()}</small>
+                </div>
+                <strong>₱${order.total.toFixed(2)}</strong>
+              </div>
+              <div class="order-items">
+                ${order.items.map(item => `
+                  <div class="order-item">
+                    ${item.image
+                      ? `<img src="${item.image.startsWith('/') ? item.image : `/images/${item.image}`}" alt="${escapeHtml(item.name)}">`
+                      : '<span class="order-item-placeholder">🥤</span>'}
+                    <span class="${statusClass === 'cancelled' ? 'cancelled-product-name' : ''}">${escapeHtml(item.name)} x${item.quantity}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="order-status ${statusClass}">
+                ${steps.map((step, index) => `
+                  <span class="${index === activeStep ? 'current' : ''}">${step}</span>
+                `).join('')}
+              </div>
+              <b class="order-current-status">${escapeHtml(order.status)}</b>
+            </article>
+          `;
+        }).join('');
+      }
+
+      async function openOrders() {
+        overlay.classList.add('show');
+        ordersModal.classList.add('show');
+        ordersContent.innerHTML = '<p class="empty">Loading your orders...</p>';
+
+        try {
+          const response = await fetch('/orders', { headers: { Accept: 'application/json' } });
+          const result = await response.json();
+
+          if (result.error) {
+            throw new Error(result.error);
+          }
+
+          renderOrders(result.orders || []);
+        } catch (error) {
+          ordersContent.innerHTML = `<p class="empty">${escapeHtml(error.message || 'Unable to load your orders.')}</p>`;
+        }
+      }
+
+      document.getElementById('openCart').addEventListener('click', openCart);
+      document.getElementById('closeCart').addEventListener('click', closeCart);
+      checkoutButton.addEventListener('click', openCheckout);
+      document.getElementById('closeCheckout').addEventListener('click', closeCheckout);
+      document.getElementById('openOrders').addEventListener('click', openOrders);
+      document.getElementById('closeOrders').addEventListener('click', () => {
+        overlay.classList.remove('show');
+        ordersModal.classList.remove('show');
+      });
+
+      // Close the cart and product modal when the overlay is clicked
+      overlay.addEventListener('click', () => {
+        closeCart();
+        closeCheckout();
+        detailsModal.classList.remove('show');
+        ordersModal.classList.remove('show');
+      });
+
+      // ==================== TOAST NOTIFICATIONS ====================
+      function toast(message) {
+        const toastElement = document.getElementById('toast');
+
+        toastElement.textContent = message;
+        toastElement.classList.add('show');
+
+        setTimeout(() => {
+          toastElement.classList.remove('show');
+        }, 2600);
+      }
+
+      // ==================== PRODUCT ACTIONS ====================
+      cards.forEach(card => {
+        const addButton = card.querySelector('.add-btn');
+        const detailsButton = card.querySelector('.open-details');
+
+        // Add a product to the cart
+        addButton.addEventListener('click', async () => {
+          addButton.disabled = true;
+
+          try {
+            const response = await fetch(`/cart/add/${card.dataset.id}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+              },
+              body: JSON.stringify({
+                quantity: 1
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.ok) {
+              // Show the new drink inside the cart drawer right away
+              applyCartResult(result);
+              openCart();
+              toast(result.message);
+            } else {
+              toast(result.error);
+            }
+          } catch (error) {
+            toast('Unable to add this drink. Please try again.');
+          } finally {
+            addButton.disabled = Number(card.dataset.stock) <= 0;
+          }
+        });
+
+        // Open the product details modal
+        detailsButton.addEventListener('click', () => {
+          const imagePath = card.dataset.image
+            ? (
+                card.dataset.image.startsWith('/')
+                  ? card.dataset.image
+                  : `/images/${card.dataset.image}`
+              )
+            : '';
+
+          const productName = card.querySelector('h3').textContent;
+          const description =
+            card.dataset.description || 'A delicious SipVerse favorite.';
+
+          const price = Number(card.dataset.price).toFixed(2);
+
+          const stock = Number(card.dataset.stock);
+
+          const imageMarkup = imagePath
+            ? `<img src="${imagePath}" alt="${productName}">`
+            : '🥤';
+
+          const stockMessage = stock > 0
+            ? `${stock} available`
+            : 'Currently out of stock';
+
+          document.getElementById('modalContent').innerHTML = `
+            <div class="modal-product">
+              <div class="modal-image">
+                ${imageMarkup}
+              </div>
+
+              <div>
+                <p class="eyebrow">SIPVERSE DRINK</p>
+
+                <h2>${productName}</h2>
+
+                <p>${description}</p>
+
+                <h3>₱${price}</h3>
+
+                <p class="muted">${stockMessage}</p>
+
+                <button
+                  class="btn primary"
+                  id="modalAdd"
+                  type="button"
+                  ${stock <= 0 ? 'disabled' : ''}
+                >
+                  ＋ Add to Cart
+                </button>
+              </div>
+            </div>
+          `;
+
+          detailsModal.classList.add('show');
+
+          // Reuse the product's Add button
+          document.getElementById('modalAdd').addEventListener('click', () => {
+            addButton.click();
+            detailsModal.classList.remove('show');
+          });
+        });
+      });
+
+      // Close the product details modal
+      document.getElementById('closeModal').addEventListener('click', () => {
+        detailsModal.classList.remove('show');
+      });
+
+      // Display a success message passed from the server
+      const successMessage = document.body.dataset.successMessage || null;
+      if (successMessage) toast(successMessage);
+    </script>
+
+  </body>
+</html>
